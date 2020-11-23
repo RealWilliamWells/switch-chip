@@ -185,9 +185,11 @@ int main(int argCount, char *argv[]) {
         return -1;
     }
 
+    romfsInit();
+
     std::string fileName;
 
-    fileName = "c8games/custom-rom";
+    fileName = "romfs:/c8games/custom-rom";
 
     setupGraphics();
 
@@ -219,6 +221,8 @@ int main(int argCount, char *argv[]) {
     SDL_CloseAudio();
 
     SDL_Quit();
+
+    romfsExit();
 
     return 0;
 }
