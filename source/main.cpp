@@ -53,23 +53,15 @@ void playBeep() {
 }
 
 void setupGraphics() {
-    SDL_Surface* screenSurface = NULL;
-
     if( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
         std::cout<<"SDL could not initialize! SDL_Error: %s\n"<<SDL_GetError();
     } else {
-        window = SDL_CreateWindow("sdl2_gles", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+        window = SDL_CreateWindow("switch-chip", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
         if (window == NULL) {
             std::cout<<"Window could not be created! SDL_Error: %s\n"<<SDL_GetError();
         } else {
-            screenSurface = SDL_GetWindowSurface( window );
-
-            SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0x00, 0x00, 0x00 ) );
-
             SDL_UpdateWindowSurface( window );
-
-
         }
     }
 }
@@ -187,6 +179,12 @@ void checkInput() {
 }
 
 int main(int argCount, char *argv[]) {
+
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
+        SDL_Log("SDL_Init: %s\n", SDL_GetError());
+        return -1;
+    }
+
     std::string fileName;
 
     fileName = "c8games/custom-rom";
