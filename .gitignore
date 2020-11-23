@@ -1,0 +1,5 @@
+switch-chip.elf
+switch-chip.nacp
+switch-chip.nro
+build/
+.idea/
