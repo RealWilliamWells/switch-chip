@@ -90,21 +90,21 @@ void drawGraphics() {
 }
 
 void checkInput() {
-    while (SDL_PollEvent( &e ) != 0) {
+    while (SDL_PollEvent( &e )) {
         if (e.type == SDL_JOYBUTTONDOWN || e.type == SDL_JOYBUTTONUP) {
             bool keyUp = true;
             if( e.type == SDL_JOYBUTTONUP ) {
                 keyUp = false;
             }
 
+            if (e.jbutton.button == 10) {
+                // (+) button
+                chip8.quit = true;
+            }
+
             // seek for joystick #0
             if (e.jbutton.which == 0) {
                 switch (e.jbutton.button) {
-                    case 10:
-                        // (+) button
-                        chip8.quit = true;
-                        break;
-
 //                    case SDLK_b:
 //                        chip8.keypad[0x0] = keyUp;
 //                        break;
@@ -115,7 +115,7 @@ void checkInput() {
 
                     case 15:
                         // Dpad down
-                        chip8.keypad[0x02] = keyUp;
+                        chip8.keypad[0x04] = keyUp;
                         break;
 
 //                    case SDLK_c:
@@ -124,7 +124,7 @@ void checkInput() {
 
                     case 12:
                         // Dpad left
-                        chip8.keypad[0x04] = keyUp;
+                        chip8.keypad[0x05] = keyUp;
                         break;
 
 //                    case SDLK_s:
@@ -142,7 +142,7 @@ void checkInput() {
 
                     case 13:
                         // Dpad up
-                        chip8.keypad[0x08] = keyUp;
+                        chip8.keypad[0x01] = keyUp;
                         break;
 
 //                    case SDLK_e:
@@ -173,6 +173,18 @@ void checkInput() {
 //                        chip8.keypad[0x0F] = keyUp;
 //                        break;
                 }
+            } else if (e.jbutton.which == 1) {
+                switch (e.jbutton.button) {
+                    case 2:
+                        // Dpad up
+                        chip8.keypad[0x0C] = keyUp;
+                        break;
+
+                    case 1:
+                        // Dpad down
+                        chip8.keypad[0x0D] = keyUp;
+                        break;
+                }
             }
         }
     }
@@ -189,12 +201,21 @@ int main(int argCount, char *argv[]) {
 
     std::string fileName;
 
-    fileName = "romfs:/c8games/custom-rom";
+    fileName = "romfs:/c8games/PONG2";
 
     setupGraphics();
 
     chip8.initialize();
     chip8.loadGame(fileName);
+
+    // Check for joycons
+    for (int i = 0; i < 2; i++) {
+        if (SDL_JoystickOpen(i) == NULL) {
+            SDL_Log("SDL_JoystickOpen: %s\n", SDL_GetError());
+            SDL_Quit();
+            return -1;
+        }
+    }
 
     // Emulation loop
     while( !chip8.quit ) {
@@ -212,8 +233,6 @@ int main(int argCount, char *argv[]) {
 
         // Set to run at 400hz
         SDL_Delay(10/4);
-
-        consoleUpdate(NULL);
     }
 
     SDL_DestroyRenderer(renderer);
